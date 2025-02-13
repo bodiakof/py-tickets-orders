@@ -15,7 +15,19 @@ from cinema.models import (
 
 class CustomListSerializer(serializers.ListSerializer):
     def __getattr__(self, key: str) -> Any:
-        return getattr(self.child, key)
+        if hasattr(self, "child") and self.child is not None:
+            if hasattr(self.child, key):
+                return getattr(self.child, key)
+            else:
+                raise AttributeError(
+                    f"'{type(self.child).__name__}' "
+                    f"object has no attribute '{key}'"
+                )
+        else:
+            raise AttributeError(
+                f"'{type(self).__name__}'"
+                f" object has no attribute 'child' or 'child' is None"
+            )
 
 
 class GenreSerializer(serializers.ModelSerializer):
